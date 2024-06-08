@@ -1,15 +1,18 @@
 package com.guidosemag.plugins
 
-import com.guidosemag.routes.userRouting
+import com.guidosemag.controllers.UserController
+import com.guidosemag.database.DatabaseFactory
 import io.ktor.server.application.*
-import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import io.ktor.server.response.*
 
 fun Application.configureRouting() {
+    val userController = UserController(DatabaseFactory.database)
+
     routing {
         get("/") {
-            call.respondText("Hello World!")
+            call.respondText("API REST is working!")
         }
-        userRouting()
+        userController.registerRoutes(this)
     }
 }

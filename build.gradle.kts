@@ -28,10 +28,13 @@ dependencies {
     implementation("io.ktor:ktor-server-auth-jwt-jvm")
     implementation("io.ktor:ktor-server-content-negotiation-jvm")
     implementation("io.ktor:ktor-serialization-kotlinx-json-jvm")
+    implementation("io.ktor:ktor-server-netty-jvm")
+
     implementation("org.mongodb:mongodb-driver-core:$mongo_version")
     implementation("org.mongodb:mongodb-driver-sync:$mongo_version")
+    implementation("org.mongodb:mongodb-driver-kotlin-coroutine:$mongo_version")
     implementation("org.mongodb:bson:$mongo_version")
-    implementation("io.ktor:ktor-server-netty-jvm")
+
     implementation("ch.qos.logback:logback-classic:$logback_version")
     testImplementation("io.ktor:ktor-server-tests-jvm")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")

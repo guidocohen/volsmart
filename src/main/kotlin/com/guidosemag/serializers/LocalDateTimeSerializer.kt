@@ -22,9 +22,6 @@ object LocalDateTimeSerializer : KSerializer<LocalDateTime> {
     }
 
     override fun deserialize(decoder: Decoder): LocalDateTime {
-        return LocalDateTime.ofInstant(
-            Instant.parse(decoder.decodeString()),
-            ZoneId.systemDefault()
-        )
+        return LocalDateTime.parse(decoder.decodeString(), formatter)
     }
 }

@@ -1,28 +1,37 @@
-import com.guidosemag.dtos.UpdateUserDto
-import com.guidosemag.models.User
+import com.guidosemag.dtos.UserDto
+import com.guidosemag.models.*
 import com.mongodb.client.MongoCollection
 import com.mongodb.client.MongoDatabase
 import com.mongodb.client.model.Filters
-import com.mongodb.client.model.Updates
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.bson.types.ObjectId
-import java.time.Instant
-import java.time.LocalDateTime
-import java.time.ZoneId
 import org.bson.Document
-import kotlin.reflect.full.memberProperties
 
 class UserService(database: MongoDatabase) {
     var usersCollection: MongoCollection<User>
+    var addressCollection: MongoCollection<Address>
+    var carCollection: MongoCollection<Car>
+    var creditCardCollection: MongoCollection<CreditCard>
 
     init {
         database.createCollection("users")
         usersCollection = database.getCollection("users", User::class.java)
+        addressCollection = database.getCollection("addresses", Address::class.java)
+        carCollection = database.getCollection("cars", Car::class.java)
+        creditCardCollection = database.getCollection("credit.cards", CreditCard::class.java)
     }
 
-    suspend fun create(user: User): String = withContext(Dispatchers.IO) {
+    suspend fun create(userDto: UserDto): String = withContext(Dispatchers.IO) {
+        val user = userDto.toUser()
+        val address = userDto.toAddress(user.id)
+        val car = userDto.toCar(user.id)
+        val creditCard = userDto.toCreditCard(user.id)
+
         usersCollection.insertOne(user)
+        addressCollection.insertOne(address)
+        carCollection.insertOne(car)
+        creditCardCollection.insertOne(creditCard)
         user.id.toString()
     }
 

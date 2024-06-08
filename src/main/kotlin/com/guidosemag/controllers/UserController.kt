@@ -1,8 +1,7 @@
 package com.guidosemag.controllers
 
 import UserService
-import com.guidosemag.dtos.UpdateUserDto
-import com.guidosemag.models.User
+import com.guidosemag.dtos.UserDto
 import com.mongodb.client.MongoDatabase
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -17,7 +16,7 @@ class UserController(database: MongoDatabase) {
         with(route) {
             route("/users") {
                 post {
-                    val payload: User = call.receive<User>()
+                    val payload: UserDto = call.receive<UserDto>()
                     val id: String = userService.create(payload)
                     call.respond(HttpStatusCode.Created, id)
                 }

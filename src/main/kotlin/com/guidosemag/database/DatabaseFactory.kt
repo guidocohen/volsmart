@@ -17,7 +17,6 @@ object DatabaseFactory {
         val databaseName = System.getenv("DB_MONGO_DATABASE")
 
         val credentials = user?.let { userVal -> password?.let { passwordVal -> "$userVal:$passwordVal@" } }.orEmpty()
-        println("credentials: $credentials")
 
         val uri = "mongodb://$credentials$host:$port/?maxPoolSize=$maxPoolSize&w=majority"
 

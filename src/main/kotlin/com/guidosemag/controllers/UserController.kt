@@ -5,6 +5,7 @@ import com.guidosemag.dtos.UserDto
 import com.mongodb.client.MongoDatabase
 import io.ktor.http.*
 import io.ktor.server.application.*
+import io.ktor.server.auth.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
@@ -14,22 +15,48 @@ class UserController(database: MongoDatabase) {
 
     fun registerRoutes(route: Route) {
         with(route) {
-            route("/users") {
-                post {
-                    val payload: UserDto = call.receive<UserDto>()
-                    val id: String = userService.create(payload)
-                    call.respond(HttpStatusCode.Created, id)
-                }
-                get("/{id}") {
-                    val userId = call.parameters["id"] ?: return@get call.respond(
-                        HttpStatusCode.BadRequest,
-                        "No se encontró el ID del usuario"
-                    )
-                    userService.readById(userId)?.let { user ->
-                        call.respond(HttpStatusCode.OK, user)
-                    } ?: call.respond(HttpStatusCode.NotFound)
-                }
-                /*
+            authenticate {
+                route("/users") {
+                    post("/sync") {
+                        try {
+                            userService.syncUsers()
+                            call.respond(HttpStatusCode.Created, "¡Sincronización Exitosa!")
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                            call.respond(HttpStatusCode.InternalServerError, "Error al sincronizar")
+                        }
+                    }
+                    post {
+                        try {
+                            val payload: UserDto = call.receive<UserDto>()
+                            val id: String = userService.create(payload)
+                            call.respond(HttpStatusCode.Created, id)
+                        } catch (e: Exception) {
+                            call.respond(HttpStatusCode.InternalServerError, "Error al crear el usuario")
+                        }
+                    }
+                    get {
+                        try {
+                            val users = userService.readAll()
+                            call.respond(HttpStatusCode.OK, users)
+                        } catch (e: Exception) {
+                            call.respond(HttpStatusCode.InternalServerError, "Error al obtener los usuarios")
+                        }
+                    }
+                    get("/{id}") {
+                        val userId = call.parameters["id"] ?: return@get call.respond(
+                            HttpStatusCode.BadRequest,
+                            "No se encontró el ID del usuario"
+                        )
+                        try {
+                            userService.readById(userId).let { user ->
+                                call.respond(HttpStatusCode.OK, user)
+                            }
+                        } catch (e: IllegalArgumentException) {
+                            call.respond(HttpStatusCode.BadRequest, e.message ?: "Error al procesar la solicitud")
+                        }
+                    }
+                    /*
                     put("/{id}") {
                         val userId = call.parameters["id"] ?: return@put call.respond(
                             HttpStatusCode.BadRequest,
@@ -41,16 +68,17 @@ class UserController(database: MongoDatabase) {
                             call.respond(HttpStatusCode.OK, user)
                         } ?: call.respond(HttpStatusCode.NotFound)
                     }
+                */
                     delete("/{id}") {
                         val userId = call.parameters["id"] ?: return@delete call.respond(
                             HttpStatusCode.BadRequest,
                             "No se encontró el ID del usuario"
                         )
-                        userService.deleteById(userId)?.let {
+                        userService.deleteById(userId).let {
                             call.respond(HttpStatusCode.OK, "Usuario $userId eliminado")
-                        } ?: call.respond(HttpStatusCode.NotFound)
+                        }
                     }
-                */
+                }
             }
         }
     }

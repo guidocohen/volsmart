@@ -11,5 +11,5 @@ data class Credential(
     @BsonId
     val id: ObjectId = ObjectId(),
     val username: String,
-    val password: String
+    var password: String
 )

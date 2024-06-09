@@ -5,6 +5,7 @@ import com.mongodb.client.MongoCollection
 import com.mongodb.client.MongoDatabase
 import com.mongodb.client.model.Filters
 import org.bson.types.ObjectId
+import org.mindrot.jbcrypt.BCrypt
 import java.util.*
 
 class AuthService(database: MongoDatabase) {
@@ -31,7 +32,7 @@ class AuthService(database: MongoDatabase) {
     fun login(credentials: Credential): String? {
         val user = credentialsCollection.find(Filters.eq("username", credentials.username)).first()
 
-        if (user == null || user.password != credentials.password) {
+        if (user == null || !BCrypt.checkpw(credentials.password, user.password)) {
             return null
         }
         return generateJWT(user.id.toString())
@@ -42,6 +43,7 @@ class AuthService(database: MongoDatabase) {
         if (existingUser != null) {
             throw IllegalArgumentException("El nombre de usuario ${credentials.username} ya existe.")
         }
+        credentials.password = BCrypt.hashpw(credentials.password, BCrypt.gensalt())
 
         credentialsCollection.insertOne(credentials)
         return generateJWT(credentials.id.toString())

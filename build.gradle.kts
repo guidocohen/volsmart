@@ -41,6 +41,8 @@ dependencies {
     implementation("org.mongodb:mongodb-driver-kotlin-coroutine:$mongo_version")
     implementation("org.mongodb:bson:$mongo_version")
 
+    implementation("org.mindrot:jbcrypt:0.4")
+
     implementation("ch.qos.logback:logback-classic:$logback_version")
     implementation("io.ktor:ktor-client-cio-jvm:2.3.11")
     testImplementation("io.ktor:ktor-server-tests-jvm:$ktor_version")

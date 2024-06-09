@@ -30,12 +30,12 @@ class AuthService(database: MongoDatabase) {
     }
 
     fun login(credentials: Credential): String? {
-        val user = credentialsCollection.find(Filters.eq("username", credentials.username)).first()
+        val credential = credentialsCollection.find(Filters.eq("username", credentials.username)).firstOrNull()
 
-        if (user == null || !BCrypt.checkpw(credentials.password, user.password)) {
+        if (credential == null || credential.checkPassword(credentials.password)) {
             return null
         }
-        return generateJWT(user.id.toString())
+        return generateJWT(credential.id.toString())
     }
 
     fun register(credentials: Credential): String? {
@@ -43,8 +43,6 @@ class AuthService(database: MongoDatabase) {
         if (existingUser != null) {
             throw IllegalArgumentException("El nombre de usuario ${credentials.username} ya existe.")
         }
-        credentials.password = BCrypt.hashpw(credentials.password, BCrypt.gensalt())
-
         credentialsCollection.insertOne(credentials)
         return generateJWT(credentials.id.toString())
     }

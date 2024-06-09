@@ -110,10 +110,10 @@ class UserService(database: MongoDatabase) {
     }
 
     /*
-suspend fun updateById(id: String, user: User): User? = withContext(Dispatchers.IO) {
-    usersCollection.findOneAndReplace(Filters.eq("_id", ObjectId(id)), user)
-}
- */
+    suspend fun updateById(id: String, user: User): User? = withContext(Dispatchers.IO) {
+        usersCollection.findOneAndReplace(Filters.eq("_id", ObjectId(id)), user)
+    }
+     */
 
     suspend fun deleteById(id: String): Boolean = withContext(Dispatchers.IO) {
         val addressResult = addressCollection.findOneAndDelete(Filters.eq("userId", ObjectId(id)))

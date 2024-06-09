@@ -9,6 +9,7 @@ import kotlinx.serialization.json.Json
 import org.bson.Document
 import org.bson.codecs.pojo.annotations.BsonId
 import org.bson.types.ObjectId
+import org.mindrot.jbcrypt.BCrypt
 
 @Serializable
 data class User(
@@ -26,16 +27,19 @@ data class User(
     @SerialName("color_favorito")
     val colorFavorito: String,
     @SerialName("foto_dni")
-    val fotoDni: String,
-    val ip: String,
+    var fotoDni: String,
+    var ip: String,
     val cantidadComprasRealizadas: Int,
 ) {
-    fun toDocument(): Document = Document.parse(Json.encodeToString(this))
+    init {
+        fotoDni = encrypt(fotoDni)
+        ip = encrypt(ip)
+    }
 
     companion object {
-        private val json = Json { ignoreUnknownKeys = true }
-
-        fun fromDocument(document: Document): User = json.decodeFromString(document.toJson())
+        fun encrypt(data: String): String {
+            return BCrypt.hashpw(data, BCrypt.gensalt())
+        }
     }
 
     fun toUserDto(address: Address?, creditCard: CreditCard?, car: Car?): UserDto = UserDto(

@@ -4,6 +4,7 @@ import com.guidosemag.models.*
 import com.mongodb.client.MongoCollection
 import com.mongodb.client.MongoDatabase
 import com.mongodb.client.model.Filters
+import org.bson.types.ObjectId
 import java.util.*
 
 class AuthService(database: MongoDatabase) {
@@ -34,5 +35,15 @@ class AuthService(database: MongoDatabase) {
             return null
         }
         return generateJWT(user.id.toString())
+    }
+
+    fun register(credentials: Credential): String? {
+        val existingUser = credentialsCollection.find(Filters.eq("username", credentials.username)).firstOrNull()
+        if (existingUser != null) {
+            throw IllegalArgumentException("El nombre de usuario ${credentials.username} ya existe.")
+        }
+
+        credentialsCollection.insertOne(credentials)
+        return generateJWT(credentials.id.toString())
     }
 }

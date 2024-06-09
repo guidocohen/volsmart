@@ -15,12 +15,29 @@ class AuthController(database: MongoDatabase) {
     fun registerRoutes(route: Route) {
         with(route) {
             post("/login") {
-                val credentials: Credential = call.receive<Credential>()
+                try {
+                    val credentials: Credential = call.receive<Credential>()
 
-                authService.login(credentials)?.let { token: String ->
-                    call.respond(HttpStatusCode.OK, token)
-                } ?: run {
-                    call.respond(HttpStatusCode.Unauthorized, "Credenciales inválidas")
+                    authService.login(credentials)?.let { token: String ->
+                        call.respond(HttpStatusCode.OK, token)
+                    } ?: run {
+                        call.respond(HttpStatusCode.Unauthorized, "Credenciales inválidas")
+                    }
+                } catch (e: IllegalArgumentException) {
+                    call.respond(HttpStatusCode.BadRequest, e.message ?: "Error al iniciar sesión")
+                } catch (e: Exception) {
+                    call.respond(HttpStatusCode.InternalServerError, "Error al iniciar sesión")
+                }
+            }
+            post("/register") {
+                try {
+                    val credentials: Credential = call.receive<Credential>()
+                    val token = authService.register(credentials)
+                    call.respond(HttpStatusCode.Created, token ?: "Usuario creado correctamente")
+                } catch (e: IllegalArgumentException) {
+                    call.respond(HttpStatusCode.BadRequest, e.message ?: "Error al crear el usuario")
+                } catch (e: Exception) {
+                    call.respond(HttpStatusCode.InternalServerError, "Error al crear el usuario")
                 }
             }
         }

@@ -21,8 +21,9 @@ class UserController(database: MongoDatabase) {
                         try {
                             userService.syncUsers()
                             call.respond(HttpStatusCode.Created, "¡Sincronización Exitosa!")
+                        } catch (e: IllegalArgumentException) {
+                            call.respond(HttpStatusCode.BadRequest, e.message ?: "Error al sincronizar")
                         } catch (e: Exception) {
-                            e.printStackTrace()
                             call.respond(HttpStatusCode.InternalServerError, "Error al sincronizar")
                         }
                     }
@@ -31,6 +32,8 @@ class UserController(database: MongoDatabase) {
                             val payload: UserDto = call.receive<UserDto>()
                             val id: String = userService.create(payload)
                             call.respond(HttpStatusCode.Created, id)
+                        } catch (e: IllegalArgumentException) {
+                            call.respond(HttpStatusCode.BadRequest, e.message ?: "Error al crear el usuario")
                         } catch (e: Exception) {
                             call.respond(HttpStatusCode.InternalServerError, "Error al crear el usuario")
                         }
@@ -39,6 +42,8 @@ class UserController(database: MongoDatabase) {
                         try {
                             val users = userService.readAll()
                             call.respond(HttpStatusCode.OK, users)
+                        } catch (e: IllegalArgumentException) {
+                            call.respond(HttpStatusCode.BadRequest, e.message ?: "Error al procesar la solicitud")
                         } catch (e: Exception) {
                             call.respond(HttpStatusCode.InternalServerError, "Error al obtener los usuarios")
                         }
@@ -54,6 +59,8 @@ class UserController(database: MongoDatabase) {
                             }
                         } catch (e: IllegalArgumentException) {
                             call.respond(HttpStatusCode.BadRequest, e.message ?: "Error al procesar la solicitud")
+                        } catch (e: Exception) {
+                            call.respond(HttpStatusCode.InternalServerError, "Error al obtener el usuario")
                         }
                     }
                     /*
@@ -70,12 +77,18 @@ class UserController(database: MongoDatabase) {
                     }
                 */
                     delete("/{id}") {
-                        val userId = call.parameters["id"] ?: return@delete call.respond(
-                            HttpStatusCode.BadRequest,
-                            "No se encontró el ID del usuario"
-                        )
-                        userService.deleteById(userId).let {
-                            call.respond(HttpStatusCode.OK, "Usuario $userId eliminado")
+                        try {
+                            val userId = call.parameters["id"] ?: return@delete call.respond(
+                                HttpStatusCode.BadRequest,
+                                "No se encontró el ID del usuario"
+                            )
+                            userService.deleteById(userId).let {
+                                call.respond(HttpStatusCode.OK, "Usuario $userId eliminado")
+                            }
+                        } catch (e: IllegalArgumentException) {
+                            call.respond(HttpStatusCode.BadRequest, e.message ?: "Error al procesar la solicitud")
+                        } catch (e: Exception) {
+                            call.respond(HttpStatusCode.InternalServerError, "Error al eliminar el usuario")
                         }
                     }
                 }

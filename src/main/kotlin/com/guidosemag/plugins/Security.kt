@@ -2,17 +2,18 @@ package com.guidosemag.plugins
 
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
+import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.auth.jwt.*
 import io.ktor.server.response.*
 
 fun Application.configureSecurity() {
-    // Please read the jwt property from the config file if you are using EngineMain
-    val jwtAudience = "jwt-audience"
-    val jwtDomain = "https://jwt-provider-domain/"
-    val jwtRealm = "ktor sample app"
-    val jwtSecret = "secret"
+    val jwtAudience = System.getenv("JWT_AUDIENCE")
+    val jwtDomain = System.getenv("JWT_DOMAIN")
+    val jwtRealm = System.getenv("JWT_REALM")
+    val jwtSecret = System.getenv("JWT_SECRET")
+
     authentication {
         jwt {
             realm = jwtRealm
@@ -24,8 +25,14 @@ fun Application.configureSecurity() {
                     .build()
             )
             validate { credential ->
-                if (credential.payload.audience.contains(jwtAudience)) JWTPrincipal(credential.payload) else null
+                if (credential.payload.audience.contains(jwtAudience) &&
+                    credential.payload.subject != null
+                ) JWTPrincipal(credential.payload) else null
+            }
+            challenge { _, _ ->
+                call.respond(HttpStatusCode.Unauthorized, "Token inválido o ha expirado")
             }
         }
     }
+
 }

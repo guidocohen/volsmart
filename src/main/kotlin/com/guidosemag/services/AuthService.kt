@@ -8,9 +8,9 @@ import java.util.*
 
 class AuthService(database: MongoDatabase) {
     private var credentialsCollection: MongoCollection<Credential>
-    private val jwtAudience = "jwt-audience"
-    private val jwtDomain = "https://jwt-provider-domain/"
-    private val jwtSecret = "secret"
+    private val jwtAudience = System.getenv("JWT_AUDIENCE")
+    private val jwtDomain = System.getenv("JWT_DOMAIN")
+    private val jwtSecret = System.getenv("JWT_SECRET")
 
     init {
         database.createCollection("credentials")
@@ -23,26 +23,16 @@ class AuthService(database: MongoDatabase) {
             .withAudience(jwtAudience)
             .withIssuer(jwtDomain)
             .withSubject(userId)
-            .withExpiresAt(Date(System.currentTimeMillis() + 86400000)) // Token expires in 24 hs
+            .withExpiresAt(Date(System.currentTimeMillis() + System.getenv("JWT_EXPIRES").toInt()))
             .sign(algorithm)
-    }
-
-    fun validateToken(token: String): String? {
-        val algorithm = Algorithm.HMAC256(jwtSecret)
-        val verifier = JWT.require(algorithm)
-            .withAudience(jwtAudience)
-            .withIssuer(jwtDomain)
-            .build()
-        val jwt = verifier.verify(token)
-        return jwt.subject
     }
 
     fun login(credentials: Credential): String? {
         val user = credentialsCollection.find(Filters.eq("username", credentials.username)).first()
-        if (user != null && user.password == credentials.password) {
-            return generateJWT(user.id.toString())
-        }
 
-        return null
+        if (user == null || user.password != credentials.password) {
+            return null
+        }
+        return generateJWT(user.id.toString())
     }
 }

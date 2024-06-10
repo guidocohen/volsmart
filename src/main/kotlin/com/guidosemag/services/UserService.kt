@@ -22,6 +22,7 @@ class UserService(database: MongoDatabase) {
     private var carCollection: MongoCollection<Car>
     private var creditCardCollection: MongoCollection<CreditCard>
 
+
     init {
         database.createCollection("users")
         database.createCollection("addresses")

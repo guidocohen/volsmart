@@ -6,9 +6,20 @@ import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.auth.jwt.*
+import io.ktor.server.plugins.cors.routing.*
 import io.ktor.server.response.*
 
 fun Application.configureSecurity() {
+    install(CORS) {
+        anyHost()
+        allowHeader(HttpHeaders.ContentType)
+        allowHeader(HttpHeaders.Authorization)
+        allowMethod(HttpMethod.Options)
+        allowMethod(HttpMethod.Get)
+        allowMethod(HttpMethod.Put)
+        allowMethod(HttpMethod.Patch)
+        allowMethod(HttpMethod.Delete)
+    }
     val jwtAudience = System.getenv("JWT_AUDIENCE")
     val jwtDomain = System.getenv("JWT_DOMAIN")
     val jwtRealm = System.getenv("JWT_REALM")

@@ -4,8 +4,6 @@ import com.guidosemag.models.*
 import com.mongodb.client.MongoCollection
 import com.mongodb.client.MongoDatabase
 import com.mongodb.client.model.Filters
-import org.bson.types.ObjectId
-import org.mindrot.jbcrypt.BCrypt
 import java.util.*
 
 class AuthService(database: MongoDatabase) {
@@ -30,20 +28,21 @@ class AuthService(database: MongoDatabase) {
     }
 
     fun login(credentials: Credential): String? {
-        val credential = credentialsCollection.find(Filters.eq("username", credentials.username)).firstOrNull()
-
-        if (credential == null || credential.checkPassword(credentials.password)) {
+        val credential = credentialsCollection.find(Filters.eq("userName", credentials.userName)).firstOrNull()
+        if (credential == null || !credential.checkPassword(credentials.password)) {
             return null
         }
         return generateJWT(credential.id.toString())
     }
 
-    fun register(credentials: Credential): String? {
-        val existingUser = credentialsCollection.find(Filters.eq("username", credentials.username)).firstOrNull()
+    fun register(credentials: Credential): Boolean {
+        val existingUser = credentialsCollection.find(Filters.eq("userName", credentials.userName)).firstOrNull()
         if (existingUser != null) {
-            throw IllegalArgumentException("El nombre de usuario ${credentials.username} ya existe.")
+            throw IllegalArgumentException("El nombre de usuario ${credentials.userName} ya existe.")
         }
+        credentials.encrypt(credentials.password)
         credentialsCollection.insertOne(credentials)
-        return generateJWT(credentials.id.toString())
+        return true
+        // return generateJWT(credentials.id.toString())
     }
 }

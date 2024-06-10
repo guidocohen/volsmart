@@ -11,17 +11,11 @@ data class Credential(
     @Serializable(with = ObjectIdSerializer::class)
     @BsonId
     val id: ObjectId = ObjectId(),
-    val username: String,
+    val userName: String,
     var password: String
 ) {
-    init {
-        password = encrypt(password)
-    }
-
-    companion object {
-        fun encrypt(data: String): String {
-            return BCrypt.hashpw(data, BCrypt.gensalt())
-        }
+    fun encrypt(data: String) {
+        password = BCrypt.hashpw(data, BCrypt.gensalt())
     }
 
     fun checkPassword(input: String): Boolean {

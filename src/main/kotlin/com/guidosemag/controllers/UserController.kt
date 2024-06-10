@@ -20,7 +20,8 @@ class UserController(database: MongoDatabase) {
                     post("/sync") {
                         try {
                             userService.syncUsers()
-                            call.respond(HttpStatusCode.Created, "¡Sincronización Exitosa!")
+                            val users = userService.readAll()
+                            call.respond(HttpStatusCode.OK, users)
                         } catch (e: IllegalArgumentException) {
                             call.respond(HttpStatusCode.BadRequest, e.message ?: "Error al sincronizar")
                         } catch (e: Exception) {

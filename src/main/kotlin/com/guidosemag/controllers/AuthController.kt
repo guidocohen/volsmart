@@ -19,6 +19,7 @@ class AuthController(database: MongoDatabase) {
                     val credentials: Credential = call.receive<Credential>()
 
                     authService.login(credentials)?.let { token: String ->
+                        println("token: $token")
                         call.respond(HttpStatusCode.OK, token)
                     } ?: run {
                         call.respond(HttpStatusCode.Unauthorized, "Credenciales inválidas")
@@ -32,8 +33,8 @@ class AuthController(database: MongoDatabase) {
             post("/register") {
                 try {
                     val credentials: Credential = call.receive<Credential>()
-                    val token = authService.register(credentials)
-                    call.respond(HttpStatusCode.Created, token ?: "Usuario creado correctamente")
+                    val result = authService.register(credentials)
+                    call.respond(HttpStatusCode.Created, result)
                 } catch (e: IllegalArgumentException) {
                     call.respond(HttpStatusCode.BadRequest, e.message ?: "Error al crear el usuario")
                 } catch (e: Exception) {

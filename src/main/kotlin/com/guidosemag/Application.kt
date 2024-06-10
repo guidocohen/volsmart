@@ -16,4 +16,5 @@ fun Application.module() {
     configureSerialization()
     configureDatabases(this)
     configureRouting()
+    // configureSwagger()
 }

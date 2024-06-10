@@ -1,0 +1,51 @@
+/* ===== Scrollbar CSS ===== */
+/* Firefox */
+.scrollable-cards {
+  scrollbar-width: auto;
+  scrollbar-color: #141414 #ffffff;
+  /* overflow-x: hidden; */
+}
+
+/* Chrome, Edge, and Safari */
+.scrollable-cards::-webkit-scrollbar {
+  width: 11px;
+  /* overflow-x: hidden; */
+}
+
+.scrollable-cards::-webkit-scrollbar-track {
+  background: #ffffff;
+  /* overflow-x: hidden; */
+}
+
+.scrollable-cards::-webkit-scrollbar-thumb {
+  background-color: #141414;
+  border-radius: 10px;
+  border: 3px solid #000000;
+  /* overflow-x: hidden; */
+}
+
+.fade-right-in {
+  animation: fade-right-in 0.3s ease-in-out forwards;
+}
+
+.fade-right-out {
+  animation: fade-right-out 0.3s ease-in-out forwards;
+}
+
+@keyframes fade-right-in {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes fade-right-out {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(100%);
+  }
+}

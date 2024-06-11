@@ -36,6 +36,7 @@ out/
 .vscode/
 
 ### Others ###
-!**/src/main/docker/mongo_data/
+**/mongo_data/
 *.pdf
+*.drawio
 */dist/

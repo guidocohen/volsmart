@@ -33,7 +33,7 @@ Para más información sobre compatibilidad de versiones, puedes consultar la [d
 
 ## Ejecución 🚀
 
-Para ejecutar la aplicación Backend y Frontend se debe seguir los siguientes pasos
+Para ejecutar la aplicación Backend y Frontend se debe seguir los siguientes pasos:
 
 1. Clonar repositorio: `git clone https://github.com/guidocohen/volsmart.git`
 2. Desde directorio docker dentro del Backend, ejecutar Docker para levantar MongoDB: `docker compose build` `docker compose up`
@@ -45,6 +45,7 @@ Para ejecutar la aplicación Backend y Frontend se debe seguir los siguientes pa
 
 ## Variables de entorno 🔧
 
+### Backend:
 - HOST
 - PORT
 - DB_MONGO_DATABASE
@@ -59,6 +60,9 @@ Para ejecutar la aplicación Backend y Frontend se debe seguir los siguientes pa
 - JWT_REALM
 - JWT_SECRET
 - MONGO_URL
+
+### Frontend:
+- VITE_LOCAL_API_URI
 
 ## Autor ✒️
 

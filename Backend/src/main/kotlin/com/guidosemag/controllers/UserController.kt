@@ -23,7 +23,7 @@ class UserController(database: MongoDatabase) {
                             val users = userService.readAll()
                             call.respond(HttpStatusCode.OK, users)
                         } catch (e: IllegalArgumentException) {
-                            call.respond(HttpStatusCode.BadRequest, e.message ?: "Error al sincronizar")
+                            call.respond(HttpStatusCode.BadRequest, e.message ?: "Error al procesar la solicitud")
                         } catch (e: Exception) {
                             call.respond(HttpStatusCode.InternalServerError, "Error al sincronizar")
                         }
@@ -34,7 +34,7 @@ class UserController(database: MongoDatabase) {
                             val id: String = userService.create(payload)
                             call.respond(HttpStatusCode.Created, id)
                         } catch (e: IllegalArgumentException) {
-                            call.respond(HttpStatusCode.BadRequest, e.message ?: "Error al crear el usuario")
+                            call.respond(HttpStatusCode.BadRequest, e.message ?: "Error al procesar la solicitud")
                         } catch (e: Exception) {
                             call.respond(HttpStatusCode.InternalServerError, "Error al crear el usuario")
                         }
@@ -76,7 +76,6 @@ class UserController(database: MongoDatabase) {
                             call.respond(HttpStatusCode.OK, user)
                         } ?: call.respond(HttpStatusCode.NotFound)
                     }
-                */
                     delete("/{id}") {
                         try {
                             val userId = call.parameters["id"] ?: return@delete call.respond(
@@ -92,6 +91,7 @@ class UserController(database: MongoDatabase) {
                             call.respond(HttpStatusCode.InternalServerError, "Error al eliminar el usuario")
                         }
                     }
+                    */
                 }
             }
         }
